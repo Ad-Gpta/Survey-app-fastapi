@@ -8,6 +8,7 @@ SECRET_KEY = "your-secret-key"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 30
 
+# for hashing and veryifying passwords
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 fake_user_db = {
@@ -19,9 +20,18 @@ fake_user_db = {
     }
 }
 
+"""
+{
+  "GID": "GID001",
+  "password": "testpass"
+}
+"""
+
+# verify entered password with hashed password
 def verify_password(plain_password, hashed_password):
     return pwd_context.verify(plain_password, hashed_password)
 
+# check if GID and password are correct
 def authenticate_user(GID: str, password: str):
     user = fake_user_db.get(GID)
     if not user:
@@ -30,6 +40,7 @@ def authenticate_user(GID: str, password: str):
         return None
     return User(GID=user["GID"], name=user["name"], email_id=user["email_id"], password="")
 
+# for creating JWT tokens (not yet implemented in routes)
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
